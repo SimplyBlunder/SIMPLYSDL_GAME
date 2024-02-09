@@ -67,7 +67,9 @@ void setup() {
 
 void update() {
   // Waste some time until reach the frame target time
-  // this should be changed later.. not nice solution.
+  // this should be changed later.. not nice solution. might use SDL_Delay to
+  // cutback on resources.
+
   while (!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time + FRAME_TARGET_TIME))
     ;
 
