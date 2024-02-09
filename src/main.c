@@ -1,8 +1,8 @@
 #include "./constants.h"
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_video.h>
+// #include <SDL2/SDL_events.h>
+// #include <SDL2/SDL_render.h>
+// #include <SDL2/SDL_video.h>
 #include <stdio.h>
 
 int game_is_running = FALSE;
@@ -32,19 +32,22 @@ int initialise_window(void) {
 
 void process_input() {
   SDL_Event event;
-  SDL_PollEvent(&event);
-
-  switch (event.type) {
-  case SDL_QUIT:
-    game_is_running = FALSE;
-    break;
-  case SDL_KEYDOWN:
-    if (event.key.keysym.sym == SDLK_ESCAPE) {
+  while (SDL_PollEvent(&event)) {
+    switch (event.type) {
+    case SDL_QUIT:
       game_is_running = FALSE;
-    } // NEED TO DOUBLE CHECK THIS MAY CAUSE ISSUES BECAUSE THE BREAK IS OUTSIDE
-      // OF THE IF BUT NOT SURE > THINK IT's CORRECT....
-    break;
+      break;
+    case SDL_KEYDOWN:
+      if (event.key.keysym.sym == SDLK_ESCAPE) {
+        game_is_running = FALSE;
+      }
+      break;
+    }
   }
+}
+
+void setup() {
+  // TODO:
 }
 
 void update() {
@@ -62,7 +65,7 @@ void destroy_window() {
 }
 
 int main() {
-  int game_is_running = initialise_window();
+  game_is_running = initialise_window();
 
   setup();
 
@@ -73,5 +76,6 @@ int main() {
   }
 
   destroy_window();
-  return 0;
+
+  return TRUE;
 }
