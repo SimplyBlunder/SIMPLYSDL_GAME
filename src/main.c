@@ -7,11 +7,17 @@
 #include <SDL2/SDL_timer.h>
 #include <stdio.h>
 
+/*
+ * Global Variables
+ * */
 int last_frame_time = 0;
 int game_is_running = FALSE;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
+/*
+ * Delcare objects for the ball and paddle
+ * */
 struct game_objects {
   float x;
   float y;
@@ -19,6 +25,9 @@ struct game_objects {
   float height;
 } ball, paddle;
 
+/*
+ * Function to initialse SDL window
+ * */
 int initialise_window(void) {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     fprintf(stderr, "Error initalising SDL.\n");
@@ -28,10 +37,13 @@ int initialise_window(void) {
   window =
       SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                        WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_BORDERLESS);
+
+  // error handiling for SDL window creation
   if (!window) {
     fprintf(stderr, "Error creating SDL Window.\n");
     return FALSE;
   }
+  // error handiling for SDL renderer
   renderer = SDL_CreateRenderer(window, -1, 0);
   if (!renderer) {
     fprintf(stderr, "Error creating SDL renderer.\n");
@@ -40,6 +52,9 @@ int initialise_window(void) {
   return TRUE;
 }
 
+// Switch Statement here handles the exit of the program using the ESC key.
+// Wrapped in a while loop here to ensure it's constantly checking for key
+// presses incase key before ESC was pressed.
 void process_input() {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
@@ -56,10 +71,11 @@ void process_input() {
   }
 }
 
+/*
+ * Setup function that runs once at the beginning of program
+ * */
 void setup() {
-  // TODO:
   // Spawning in objects.
-
   ball.x = 20;
   ball.y = 20;
   ball.width = 15;
@@ -70,15 +86,14 @@ void setup() {
   paddle.height = 15;
 }
 
+/*
+ * Update function with a fixed time step
+ * */
 void update() {
-  // Waste some time until reach the frame target time
-  // this should be changed later.. not nice solution. might use SDL_Delay to
-  // cutback on resources.
-
   // sleep the execution until we reach the target frame time in milli.
   int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
 
-  // only call delay if we are too fast too process this frame.
+  // only call delay if we are too fast to process this frame.
   if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
     SDL_Delay(time_to_wait);
   }
@@ -94,6 +109,9 @@ void update() {
   paddle.y += 20 * delta_time;
 }
 
+/*
+ * Function to draw game objects in SDL window
+ * */
 void render() {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
@@ -117,12 +135,18 @@ void render() {
   SDL_RenderPresent(renderer);
 }
 
+/*
+ * Function to destroy SDL window and renderer
+ * */
 void destroy_window() {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
 }
 
+/*
+ * Main function
+ * */
 int main() {
   game_is_running = initialise_window();
 
