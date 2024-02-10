@@ -1,6 +1,6 @@
 #include "./constants.h"
 #include <SDL2/SDL.h>
-// #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_events.h>
 // #include <SDL2/SDL_render.h>
 // #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_render.h>
@@ -12,12 +12,12 @@ int game_is_running = FALSE;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
-struct ball {
+struct game_objects {
   float x;
   float y;
   float width;
   float height;
-} ball;
+} ball, paddle;
 
 int initialise_window(void) {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -58,11 +58,16 @@ void process_input() {
 
 void setup() {
   // TODO:
+  // Spawning in objects.
 
   ball.x = 20;
   ball.y = 20;
   ball.width = 15;
   ball.height = 15;
+  paddle.x = 20;
+  paddle.y = 20;
+  paddle.width = 15;
+  paddle.height = 15;
 }
 
 void update() {
@@ -70,15 +75,23 @@ void update() {
   // this should be changed later.. not nice solution. might use SDL_Delay to
   // cutback on resources.
 
-  while (!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time + FRAME_TARGET_TIME))
-    ;
+  // sleep the execution until we reach the target frame time in milli.
+  int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
+
+  // only call delay if we are too fast too process this frame.
+  if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
+    SDL_Delay(time_to_wait);
+  }
 
   float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
 
   last_frame_time = SDL_GetTicks();
-
+  // setting object speed
   ball.x += 70 * delta_time;
   ball.y += 50 * delta_time;
+
+  paddle.x += 20 * delta_time;
+  paddle.y += 20 * delta_time;
 }
 
 void render() {
@@ -89,8 +102,15 @@ void render() {
   SDL_Rect ball_rect = {(int)ball.x, (int)ball.y, (int)ball.width,
                         (int)ball.height};
 
+  // Drawing paddle for test purposes
+  SDL_Rect paddle_rect = {(int)paddle.x, (int)paddle.y, (int)paddle.width,
+                          (int)paddle.height};
+
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderFillRect(renderer, &ball_rect);
+
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_RenderFillRect(renderer, &paddle_rect);
 
   // Start drawing objets here
   // TWO buffers for swap
